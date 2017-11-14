@@ -77,6 +77,8 @@ public class AddWordEditTopic extends AppCompatActivity {
                         String topicId = topicKey.getKey();
                         wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
 
+                        Log.i("test", "hello");
+
                         //add word to topic->words
 //                        for(final String id : topicIdsTopics){
 //                            DatabaseReference nameRef = topicRef.child(id).child("name");
