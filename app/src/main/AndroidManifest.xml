@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cp.wordbox">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/icon"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".dictActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".grammarActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".learnActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".textRecActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".addWordDialog" />
+        <activity android:name=".AddWordEditTopic"></activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "651619334387",
+    "firebase_url": "https://wordbox-78bcc.firebaseio.com",
+    "project_id": "wordbox-78bcc",
+    "storage_bucket": "wordbox-78bcc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651619334387:android:2bdaaf10ce7566c3",
+        "android_client_info": {
+          "package_name": "cp.wordbox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "651619334387-o75n9fa4c5tf0tuctv2vhd6tcgre96ne.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cp.wordbox",
+            "certificate_hash": "41fff08a3f19477a68bf394562b51d08641e10bd"
+          }
+        },
+        {
+          "client_id": "651619334387-ptfcac4q0b8u7qhkj2qd3c4av0eimbso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGykBcWci0yu8B2qjeHTs6IwUepjWn50k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "651619334387-ptfcac4q0b8u7qhkj2qd3c4av0eimbso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

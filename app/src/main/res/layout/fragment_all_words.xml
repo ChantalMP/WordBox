@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1"
+    tools:context="cp.wordbox.AllWordsFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/allWords_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:layout_weight="0.9" />
+
+    <Button
+        android:id="@+id/addWordBtn"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:background="@color/colorPrimaryDark"
+        android:text="Add new word"
+        android:textColor="@android:color/background_light" />
+</LinearLayout>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBright"
+    android:orientation="vertical"
+    tools:context="cp.wordbox.MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:titleTextColor="@android:color/background_light" />
+
+    <Button
+        android:id="@+id/dictBtnID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="80dp"
+        android:background="@color/colorPrimaryDark"
+        android:onClick="dictBtn"
+        android:text="dictionary"
+        android:textColor="@android:color/background_light" />
+
+    <Button
+        android:id="@+id/grammarBtnID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimaryDark"
+        android:onClick="grammarBtn"
+        android:text="grammar"
+        android:textColor="@android:color/background_light" />
+
+    <Button
+        android:id="@+id/learnBtnID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimaryDark"
+        android:onClick="learnBtn"
+        android:text="learning"
+        android:textColor="@android:color/background_light" />
+
+    <Button
+        android:id="@+id/textRecBtnID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimaryDark"
+        android:onClick="textRecBtn"
+        android:text="add words from picture"
+        android:textColor="@android:color/background_light" />
+</LinearLayout>
