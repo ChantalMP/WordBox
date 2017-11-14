@@ -289,7 +289,7 @@ public class AllWordsFragment extends Fragment {
                         wordsRef.child(wordId).child("otherLang2").setValue(field2Other);
                         wordsRef.child(wordId).child("otherLang3").setValue(field3Other);
                     }
-
+                    
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
@@ -318,71 +318,6 @@ public class AllWordsFragment extends Fragment {
 
         addDialog.show();
     }
-
-//    private void showTopicDialog() {
-//        final Dialog addTopicsDialog = new Dialog(getContext());
-//        addTopicsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        addTopicsDialog.setContentView(R.layout.add_word_edit_topic);
-//
-//        //set Dialog width according to device size
-//        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-//        lp.copyFrom(addTopicsDialog.getWindow().getAttributes());
-//        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-//        addTopicsDialog.getWindow().setAttributes(lp);
-//
-//        Button addTopicBtn = (Button) addTopicsDialog.findViewById(R.id.addTopicBtn);
-//        Button saveButton = (Button) addTopicsDialog.findViewById(R.id.add_word_edit_topic_save_btn);
-//
-//        addTopicBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //addTopicDialog("Add new Topic");
-//                Log.i("test", "noch ist es nicht möglich hier Themen hinzuzufügen");
-//            }
-//        });
-//
-//        saveButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //populate checked boxes to Firebase
-//                for (final String topic : selected) {
-//                    if (!selectedOld.contains(topic)) {
-//                        //add topic to word->topics
-//                        DatabaseReference topicKey = wordsRef.child(wordId).child("topics").push();
-//                        String topicId = topicKey.getKey();
-//                        wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
-//
-//                        //add word to topic->words
-////                        for(final String id : topicIdsTopics){
-////                            DatabaseReference nameRef = topicRef.child(id).child("name");
-////                            nameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-////                                @Override
-////                                public void onDataChange(DataSnapshot dataSnapshot) {
-////                                    String name = dataSnapshot.getValue().toString();
-////                                    //Log.i("test", "test " + name);
-////                                    if (topic.equals(name)){
-////                                        //Log.i("test", "match " + name);
-////                                        DatabaseReference wordKey = topicRef.child(id).child("words").push();
-////                                        String topicWordId = wordKey.getKey();
-////                                        //set value at reference to word
-////                                        topicRef.child(id).child("words").child(topicWordId).setValue(wordId);
-////                                    }
-////                                }
-////
-////                                @Override
-////                                public void onCancelled(DatabaseError databaseError) {
-////
-////                                }
-////                            });
-////                        }
-//                    }
-//                }
-//            }
-//        });
-//
-//
-//
-//    }
 
     private void addInputField(EditText field2, EditText field3) {
         if(field2.getVisibility() == View.GONE)

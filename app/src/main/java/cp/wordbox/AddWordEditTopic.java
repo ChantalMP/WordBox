@@ -69,7 +69,6 @@ public class AddWordEditTopic extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //populate checked boxes to Firebase
-                Log.i("test", "click " + selected);
                 for (final String topic : selected) {
                     if (!selectedOld.contains(topic)) {
                         //add topic to word->topics
@@ -77,31 +76,27 @@ public class AddWordEditTopic extends AppCompatActivity {
                         String topicId = topicKey.getKey();
                         wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
 
-                        Log.i("test", "hello");
-
                         //add word to topic->words
-//                        for(final String id : topicIdsTopics){
-//                            DatabaseReference nameRef = topicRef.child(id).child("name");
-//                            nameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(DataSnapshot dataSnapshot) {
-//                                    String name = dataSnapshot.getValue().toString();
-//                                    //Log.i("test", "test " + name);
-//                                    if (topic.equals(name)){
-//                                        //Log.i("test", "match " + name);
-//                                        DatabaseReference wordKey = topicRef.child(id).child("words").push();
-//                                        String topicWordId = wordKey.getKey();
-//                                        //set value at reference to word
-//                                        topicRef.child(id).child("words").child(topicWordId).setValue(wordId);
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(DatabaseError databaseError) {
-//
-//                                }
-//                            });
-//                        }
+                        for(final String id : topicIdsTopics){
+                            DatabaseReference nameRef = topicRef.child(id).child("name");
+                            nameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String name = dataSnapshot.getValue().toString();
+                                    if (topic.equals(name)){
+                                        DatabaseReference wordKey = topicRef.child(id).child("words").push();
+                                        String topicWordId = wordKey.getKey();
+                                        //set value at reference to word
+                                        topicRef.child(id).child("words").child(topicWordId).setValue(wordId);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
                     }
                 }
 
