@@ -2,7 +2,6 @@ package cp.wordbox;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -19,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,8 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import cp.wordbox.recyclerView_models.Topic;
 
 public class TopicWordFragment extends Fragment {
 
@@ -104,10 +101,9 @@ public class TopicWordFragment extends Fragment {
                         DatabaseReference topic_key = topicRef.push();
                         //get key
                         String topicId = topic_key.getKey();
-
                         //set values
                         topicRef.child(topicId).child("name").setValue(topicName);
-                        topicRef.child(topicId).child("alphabet").setValue(topicName.substring(0,1).toLowerCase());
+                        topicRef.child(topicId).child("sortVersion").setValue(topicName.toLowerCase());
 
                     }
 
@@ -127,7 +123,7 @@ public class TopicWordFragment extends Fragment {
         super.onStart();
         //get Data from Firebase with Firebase Recycler Apdapter
         //model class, ViewHolder Class
-        Query topicquery = topicRef.orderByChild("alphabet");
+        Query topicquery = topicRef.orderByChild("sortVersion");
         FirebaseRecyclerAdapter<Topic, TopicViewHolder> firebaseRecyclerAdapter
                 = new FirebaseRecyclerAdapter<Topic, TopicViewHolder>(
                 Topic.class,
@@ -147,6 +143,21 @@ public class TopicWordFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Log.i("test", "click");
+//
+//                        FragmentPagerAdapter myAdapter = new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
+//                            @Override
+//                            public Fragment getItem(int position) {
+//                                return null;
+//                            }
+//
+//                            @Override
+//                            public int getCount() {
+//                                return 0;
+//                            }
+//                        };
+
+
+
                         //new Intent -> Topic -> looks like "All" word list, but only with words in topic
                         //i have saved word ids in topic
                         //Intent to AllWordsFragment -> add word is similar, edit also

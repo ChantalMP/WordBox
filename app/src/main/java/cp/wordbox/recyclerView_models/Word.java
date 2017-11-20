@@ -1,4 +1,4 @@
-package cp.wordbox;
+package cp.wordbox.recyclerView_models;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Chantal on 05.11.2017.
  */
 
-class Word {
+public class Word {
 
     private String id;
     private String yourLang;

@@ -1,5 +1,6 @@
 package cp.wordbox;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import cp.wordbox.recyclerView_models.Topic;
 
 public class AddWordEditTopic extends AppCompatActivity {
 
@@ -68,40 +71,38 @@ public class AddWordEditTopic extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //populate checked boxes to Firebase
-                for (final String topic : selected) {
-                    if (!selectedOld.contains(topic)) {
-                        //add topic to word->topics
-                        DatabaseReference topicKey = wordsRef.child(wordId).child("topics").push();
-                        String topicId = topicKey.getKey();
-                        wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
-
-                        //add word to topic->words
-                        for(final String id : topicIdsTopics){
-                            DatabaseReference nameRef = topicRef.child(id).child("name");
-                            nameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    String name = dataSnapshot.getValue().toString();
-                                    if (topic.equals(name)){
-                                        DatabaseReference wordKey = topicRef.child(id).child("words").push();
-                                        String topicWordId = wordKey.getKey();
-                                        //set value at reference to word
-                                        topicRef.child(id).child("words").child(topicWordId).setValue(wordId);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-                    }
-                }
-
-                //close activity (Intent)
+                selected.removeAll(selectedOld);
+                Intent dataIntent = new Intent();
+                dataIntent.putExtra("result", selected);
+                setResult(RESULT_OK, dataIntent);
                 finish();
+                //populate checked boxes to Firebase
+//                for (final String topic : selected) {
+//                    if (!selectedOld.contains(topic)) {
+//
+//                        //add word to topic->words
+//                        for(final String id : topicIdsTopics){
+//                            DatabaseReference nameRef = topicRef.child(id).child("name");
+//                            nameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(DataSnapshot dataSnapshot) {
+//                                    String name = dataSnapshot.getValue().toString();
+//                                    if (topic.equals(name)){
+//                                        DatabaseReference wordKey = topicRef.child(id).child("words").push();
+//                                        String topicWordId = wordKey.getKey();
+//                                        //set value at reference to word
+//                                        topicRef.child(id).child("words").child(topicWordId).setValue(wordId);
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//                        }
+//                    }
+//                }
             }
         });
     }
@@ -115,7 +116,7 @@ public class AddWordEditTopic extends AppCompatActivity {
 
         //get Data from Firebase with Firebase Recycler Apdapter
         //model class, ViewHolder Class
-        Query topicquery = topicRef.orderByChild("alphabet");
+        Query topicquery = topicRef.orderByChild("sortVersion");
         FirebaseRecyclerAdapter<Topic, AddWordEditTopic.TopicViewHolder> firebaseRecyclerAdapter
                 = new FirebaseRecyclerAdapter<Topic, AddWordEditTopic.TopicViewHolder>(
                 Topic.class,
@@ -202,18 +203,16 @@ public class AddWordEditTopic extends AppCompatActivity {
             selectedOld.clear();
             selected.clear();
 
-        //Prüfen ob topic überhaupt noch existiert
-            DatabaseReference wordRef = wordsRef.child(wordId).child("topics").getRef();
-            wordRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        //TODO: Prüfen ob topic überhaupt noch existiert
+            DatabaseReference WordTopicsRef = wordsRef.child(wordId).child("topics").getRef();
+            WordTopicsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
                         Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
                         while (children.hasNext()){
                             String topic = children.next().getValue().toString();
-                            //if(!selected.contains(topic))
                                 selected.add(topic);
-                            //if(!selectedOld.contains(topic))
                                 selectedOld.add(topic);
                         }
                     }

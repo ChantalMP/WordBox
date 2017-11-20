@@ -1,10 +1,10 @@
-package cp.wordbox;
+package cp.wordbox.recyclerView_models;
 
 /**
  * Created by Chantal on 05.11.2017.
  */
 
-class Topic {
+public class Topic {
 
     String name;
 

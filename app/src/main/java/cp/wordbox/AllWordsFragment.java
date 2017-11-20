@@ -1,15 +1,14 @@
 package cp.wordbox;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,22 +17,24 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+
+import cp.wordbox.recyclerView_models.Word;
 
 
 public class AllWordsFragment extends Fragment {
@@ -55,8 +56,10 @@ public class AllWordsFragment extends Fragment {
     String field2Other = "";
     String field3Other = "";
 
-    private ArrayList<String> selected;
-    private ArrayList<String> selectedOld;
+    private ArrayList<String> topicsSelected;
+
+
+    Firebase_Interactor firebase_interactor;
 
 
     public AllWordsFragment() {
@@ -69,8 +72,9 @@ public class AllWordsFragment extends Fragment {
         // Inflate the layout for this fragment
         myMainView =  inflater.inflate(R.layout.fragment_all_words, container, false);
 
-        selected = new ArrayList<String>();
-        selectedOld = new ArrayList<String>();
+        topicsSelected = new ArrayList<String>();
+
+        firebase_interactor = new Firebase_Interactor();
 
         Button addWordBtn = (Button) myMainView.findViewById(R.id.addWordBtn);
         addWordBtn.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +100,6 @@ public class AllWordsFragment extends Fragment {
         return myMainView;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -104,7 +107,9 @@ public class AllWordsFragment extends Fragment {
         //get Data from Firebase with Firebase Recycler Apdapter
 
         //to order values after word in your language - not sorted if you just pass the reference to your adapter
-        Query query = wordsRef.orderByChild("alphabet");
+        Query query = wordsRef.orderByChild("sortVersion");
+        
+        //filter by word idee -> other query -> others get populated -> rest of functionality remains the same
 
         //model class, ViewHolder Class
         FirebaseRecyclerAdapter<Word, TopicViewHolder> firebaseRecyclerAdapter
@@ -164,6 +169,15 @@ public class AllWordsFragment extends Fragment {
         wordsList.setAdapter(firebaseRecyclerAdapter);
 //       EXTREMELY IMPORTANT
         firebaseRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+            if (data.hasExtra("result")) {
+                topicsSelected = data.getStringArrayListExtra("result");
+            }
+        }
     }
 
     public static class TopicViewHolder extends RecyclerView.ViewHolder{
@@ -244,7 +258,8 @@ public class AllWordsFragment extends Fragment {
                 wordId = id;
                 Intent editTopicsIntent = new Intent(getContext(), AddWordEditTopic.class);
                 editTopicsIntent.putExtra("wordId", wordId);
-                startActivity(editTopicsIntent);
+                startActivityForResult(editTopicsIntent, 1);//1 ist requestCode
+
                 //showTopicDialog();
             }
         });
@@ -278,18 +293,23 @@ public class AllWordsFragment extends Fragment {
                         if(edit){
                             wordId = id;
                         }
-                        //single String values
-                        wordsRef.child(wordId).child("learn").setValue("1");
-                        wordsRef.child(wordId).child("degree").setValue("0");
-                        wordsRef.child(wordId).child("otherLang").setValue(dialogInputOtherLang);
-                        wordsRef.child(wordId).child("yourLang").setValue(dialogInputYourLang);
-                        wordsRef.child(wordId).child("alphabet").setValue(dialogInputYourLang.substring(0,1).toLowerCase());
-                        wordsRef.child(wordId).child("yourLang2").setValue(field2Your);
-                        wordsRef.child(wordId).child("yourLang3").setValue(field3Your);
-                        wordsRef.child(wordId).child("otherLang2").setValue(field2Other);
-                        wordsRef.child(wordId).child("otherLang3").setValue(field3Other);
+
+                        HashMap wordInfos = new HashMap();
+                        wordInfos.put("id", wordId);
+                        wordInfos.put("learn", "1");
+                        wordInfos.put("degree", "0");
+                        wordInfos.put("otherLang", dialogInputOtherLang);
+                        wordInfos.put("yourLang", dialogInputYourLang);
+                        wordInfos.put("sortVersion", dialogInputYourLang.toLowerCase());
+                        wordInfos.put("yourLang2", field2Your);
+                        wordInfos.put("yourLang3", field3Your);
+                        wordInfos.put("otherLang2", field2Other);
+                        wordInfos.put("otherLang3", field3Other);
+                        wordInfos.put("topics", topicsSelected);
+
+                        firebase_interactor.add_word(wordInfos);
                     }
-                    
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
@@ -318,6 +338,7 @@ public class AllWordsFragment extends Fragment {
 
         addDialog.show();
     }
+
 
     private void addInputField(EditText field2, EditText field3) {
         if(field2.getVisibility() == View.GONE)
