@@ -108,7 +108,7 @@ public class AllWordsFragment extends Fragment {
 
         //to order values after word in your language - not sorted if you just pass the reference to your adapter
         Query query = wordsRef.orderByChild("sortVersion");
-        
+
         //filter by word idee -> other query -> others get populated -> rest of functionality remains the same
 
         //model class, ViewHolder Class

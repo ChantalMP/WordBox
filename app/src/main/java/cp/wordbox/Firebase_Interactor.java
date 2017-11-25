@@ -34,9 +34,9 @@ public class Firebase_Interactor {
         topicRef = FirebaseDatabase.getInstance().getReference().child("topics").child(current_user_id);
     }
 
-    public void add_word(HashMap word){
+    public void add_word(final HashMap word){
         //to wordRef
-        String wordId = word.get("id").toString();
+        final String wordId = word.get("id").toString();
         wordsRef.child(wordId).child("learn").setValue("1");
         wordsRef.child(wordId).child("degree").setValue("0");
         wordsRef.child(wordId).child("otherLang").setValue(word.get("otherLang"));
@@ -53,14 +53,32 @@ public class Firebase_Interactor {
         }
 
         //to topicRef
-        for (String topic: (ArrayList<String>) word.get("topics")){
+        for (final String topic: (ArrayList<String>) word.get("topics")){
             topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //all topics in Database
                     Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
                     while (children.hasNext()){
-                        
+                        //topic in topiclist of word
+                        DataSnapshot topicchild = children.next();
+                        if(topicchild.child("name").getValue().toString().equals(topic)){
+                            topicchild.child("words").child(wordId).child("learn").getRef().setValue("1");
+                            topicchild.child("words").child(wordId).child("degree").getRef().setValue("0");
+                            topicchild.child("words").child(wordId).child("otherLang").getRef().setValue(word.get("otherLang"));
+                            topicchild.child("words").child(wordId).child("yourLang").getRef().setValue(word.get("yourLang"));
+                            topicchild.child("words").child(wordId).child("sortVersion").getRef().setValue(word.get("sortVersion"));
+                            topicchild.child("words").child(wordId).child("yourLang2").getRef().setValue(word.get("yourLang2"));
+                            topicchild.child("words").child(wordId).child("yourLang3").getRef().setValue(word.get("yourLang3"));
+                            topicchild.child("words").child(wordId).child("otherLang2").getRef().setValue(word.get("otherLang2"));
+                            topicchild.child("words").child(wordId).child("otherLang3").getRef().setValue(word.get("otherLang3"));
+                        }
+
+                        for(String topic: (ArrayList<String>) word.get("topics")){
+                            DatabaseReference topicKey = topicchild.child("words").child(wordId).child("topics").getRef().push();
+                            String topicId = topicKey.getKey();
+                            topicchild.child("words").child(wordId).child("topics").child(topicId).getRef().setValue(topic);
+                        }
                     }
 
                 }
@@ -76,12 +94,4 @@ public class Firebase_Interactor {
     public void remove_word(HashMap word){
 
     }
-
-//    public void add_topic(){
-//
-//    }
-//
-//    public void remove_topic(){
-//
-//    }
 }

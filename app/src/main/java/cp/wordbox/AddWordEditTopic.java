@@ -200,27 +200,27 @@ public class AddWordEditTopic extends AppCompatActivity {
     }
 
     public void topicsChecked(){
-            selectedOld.clear();
-            selected.clear();
+        selectedOld.clear();
+        selected.clear();
 
         //TODO: Prüfen ob topic überhaupt noch existiert
-            DatabaseReference WordTopicsRef = wordsRef.child(wordId).child("topics").getRef();
-            WordTopicsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-                        while (children.hasNext()){
-                            String topic = children.next().getValue().toString();
-                                selected.add(topic);
-                                selectedOld.add(topic);
-                        }
+        DatabaseReference WordTopicsRef = wordsRef.child(wordId).child("topics").getRef();
+        WordTopicsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+                    while (children.hasNext()){
+                        String topic = children.next().getValue().toString();
+                        selected.add(topic);
+                        selectedOld.add(topic);
                     }
-                };
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
                 }
-            });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }
