@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +28,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import cp.wordbox.recyclerView_models.Word;
 
@@ -56,7 +55,8 @@ public class AllWordsFragment extends Fragment {
     String field2Other = "";
     String field3Other = "";
 
-    private ArrayList<String> topicsSelected;
+    private ArrayList<String> topicsSelectedOld;
+    private ArrayList<String> topicsSelectedNew;
 
 
     Firebase_Interactor firebase_interactor;
@@ -72,7 +72,8 @@ public class AllWordsFragment extends Fragment {
         // Inflate the layout for this fragment
         myMainView =  inflater.inflate(R.layout.fragment_all_words, container, false);
 
-        topicsSelected = new ArrayList<String>();
+        topicsSelectedOld = new ArrayList<String>();
+        topicsSelectedNew = new ArrayList<String>();
 
         firebase_interactor = new Firebase_Interactor();
 
@@ -174,8 +175,11 @@ public class AllWordsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == 1) {
-            if (data.hasExtra("result")) {
-                topicsSelected = data.getStringArrayListExtra("result");
+            if (data.hasExtra("allTopics")) {
+                topicsSelectedOld = data.getStringArrayListExtra("allTopics");
+            }
+            if (data.hasExtra("newTopics")) {
+                topicsSelectedNew = data.getStringArrayListExtra("newTopics");
             }
         }
     }
@@ -305,7 +309,11 @@ public class AllWordsFragment extends Fragment {
                         wordInfos.put("yourLang3", field3Your);
                         wordInfos.put("otherLang2", field2Other);
                         wordInfos.put("otherLang3", field3Other);
-                        wordInfos.put("topics", topicsSelected);
+                        wordInfos.put("topicsAll", topicsSelectedOld);
+                        wordInfos.put("topicsNew", topicsSelectedNew);
+                        //make empty for next word
+                        topicsSelectedOld = new ArrayList<String>();
+                        topicsSelectedNew = new ArrayList<String>();
 
                         firebase_interactor.add_word(wordInfos);
                     }

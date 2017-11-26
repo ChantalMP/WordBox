@@ -1,5 +1,7 @@
 package cp.wordbox;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -10,7 +12,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by Chantal on 20.11.2017.
@@ -20,14 +21,10 @@ public class Firebase_Interactor {
 
     private DatabaseReference wordsRef;
     private DatabaseReference topicRef;
-    private DatabaseReference rootRef;
     private FirebaseAuth mAuth;
-
-    //oder hier rausfinden welche topics?
+    ArrayList<String> topicsUpdate;
 
     public Firebase_Interactor(){
-        rootRef = FirebaseDatabase.getInstance().getReference();
-
         mAuth = FirebaseAuth.getInstance();
         String current_user_id = mAuth.getCurrentUser().getUid();
         wordsRef = FirebaseDatabase.getInstance().getReference().child("words").child(current_user_id);
@@ -46,14 +43,20 @@ public class Firebase_Interactor {
         wordsRef.child(wordId).child("yourLang3").setValue(word.get("yourLang3"));
         wordsRef.child(wordId).child("otherLang2").setValue(word.get("otherLang2"));
         wordsRef.child(wordId).child("otherLang3").setValue(word.get("otherLang3"));
-        for(String topic: (ArrayList<String>) word.get("topics")){
+
+        for(String topic: (ArrayList<String>) word.get("topicsNew")){
             DatabaseReference topicKey = wordsRef.child(wordId).child("topics").push();
             String topicId = topicKey.getKey();
             wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
         }
 
         //to topicRef
-        for (final String topic: (ArrayList<String>) word.get("topics")){
+        final ArrayList<String> allTopics = (ArrayList<String>) word.get("topicsAll");
+        final ArrayList<String> newTopics = (ArrayList<String>) word.get("topicsNew");
+        Log.i("test", "interact all " + allTopics.toString());
+        Log.i("test", "interact new " + newTopics.toString());
+
+        for (final String topic: allTopics){
             topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -62,6 +65,12 @@ public class Firebase_Interactor {
                     while (children.hasNext()){
                         //topic in topiclist of word
                         DataSnapshot topicchild = children.next();
+                        //word doesn't already exists in topic -> needs to be made new instead of updated ->all topics
+                        if (newTopics.contains(topicchild.child("name").getValue().toString()))
+                            topicsUpdate = allTopics;
+                        else
+                            topicsUpdate = newTopics;
+
                         if(topicchild.child("name").getValue().toString().equals(topic)){
                             topicchild.child("words").child(wordId).child("learn").getRef().setValue("1");
                             topicchild.child("words").child(wordId).child("degree").getRef().setValue("0");
@@ -72,12 +81,12 @@ public class Firebase_Interactor {
                             topicchild.child("words").child(wordId).child("yourLang3").getRef().setValue(word.get("yourLang3"));
                             topicchild.child("words").child(wordId).child("otherLang2").getRef().setValue(word.get("otherLang2"));
                             topicchild.child("words").child(wordId).child("otherLang3").getRef().setValue(word.get("otherLang3"));
-                        }
 
-                        for(String topic: (ArrayList<String>) word.get("topics")){
-                            DatabaseReference topicKey = topicchild.child("words").child(wordId).child("topics").getRef().push();
-                            String topicId = topicKey.getKey();
-                            topicchild.child("words").child(wordId).child("topics").child(topicId).getRef().setValue(topic);
+                            for(String topic: topicsUpdate){
+                                DatabaseReference topicKey = topicchild.child("words").child(wordId).child("topics").getRef().push();
+                                String topicId = topicKey.getKey();
+                                topicchild.child("words").child(wordId).child("topics").child(topicId).getRef().setValue(topic);
+                            }
                         }
                     }
 

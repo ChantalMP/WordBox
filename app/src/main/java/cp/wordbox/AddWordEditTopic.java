@@ -37,6 +37,7 @@ public class AddWordEditTopic extends AppCompatActivity {
 
     private ArrayList<String> selected;
     private ArrayList<String> selectedOld;
+    private ArrayList<String> selectedAll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class AddWordEditTopic extends AppCompatActivity {
 
         selected = new ArrayList<String>();
         selectedOld = new ArrayList<String>();
+        selectedAll = new ArrayList<String>();
         topicIdsTopics = new ArrayList<String>();
 
         mAuth = FirebaseAuth.getInstance();
@@ -71,38 +73,13 @@ public class AddWordEditTopic extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selected.removeAll(selectedOld);
                 Intent dataIntent = new Intent();
-                dataIntent.putExtra("result", selected);
+                selectedAll.addAll(selected);
+                dataIntent.putExtra("allTopics", selectedAll);
+                selected.removeAll(selectedOld);
+                dataIntent.putExtra("newTopics", selected);
                 setResult(RESULT_OK, dataIntent);
                 finish();
-                //populate checked boxes to Firebase
-//                for (final String topic : selected) {
-//                    if (!selectedOld.contains(topic)) {
-//
-//                        //add word to topic->words
-//                        for(final String id : topicIdsTopics){
-//                            DatabaseReference nameRef = topicRef.child(id).child("name");
-//                            nameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(DataSnapshot dataSnapshot) {
-//                                    String name = dataSnapshot.getValue().toString();
-//                                    if (topic.equals(name)){
-//                                        DatabaseReference wordKey = topicRef.child(id).child("words").push();
-//                                        String topicWordId = wordKey.getKey();
-//                                        //set value at reference to word
-//                                        topicRef.child(id).child("words").child(topicWordId).setValue(wordId);
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(DatabaseError databaseError) {
-//
-//                                }
-//                            });
-//                        }
-//                    }
-//                }
             }
         });
     }
@@ -150,6 +127,7 @@ public class AddWordEditTopic extends AppCompatActivity {
                             topicCheck.setChecked(false);
                             selected.remove(topicCheck.getText().toString());
                             selectedOld.remove(topicCheck.getText().toString());
+                            //remove topic in word
                             DatabaseReference removeRef = wordsRef.child(wordId).child("topics");
                             removeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -161,6 +139,30 @@ public class AddWordEditTopic extends AppCompatActivity {
                                         if(topic.equals(topicCheck.getText().toString())){
                                             //child is the one witch was unselected
                                             childSel.getRef().removeValue();
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
+
+                            //remove word from topic
+                            DatabaseReference removeRef2 = topicRef;
+                            removeRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    //all topics
+                                    Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+                                    while (children.hasNext()){
+                                        DataSnapshot childSel = children.next();
+                                        final String topic = childSel.child("name").getValue().toString();
+                                        //remove from topicList
+                                        if(topic.equals(topicCheck.getText().toString())){
+                                            //child is the topic which was unselected
+                                            childSel.child("words").child(wordId).getRef().removeValue();
                                             break;
                                         }
                                     }
