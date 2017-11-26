@@ -65,6 +65,33 @@ public class Firebase_Interactor {
                     while (children.hasNext()){
                         //topic in topiclist of word
                         DataSnapshot topicchild = children.next();
+
+                        //remove topic in topiclist in word in topic
+                        DatabaseReference remRev = topicchild.child("words").child(wordId).child("topics").getRef();
+                        remRev.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+                                while (children.hasNext()) {
+                                    DataSnapshot childSel = children.next();
+                                    String topic = childSel.getValue().toString();
+                                    if(!allTopics.contains(topic)){//topic was removed
+                                        childSel.getRef().removeValue();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
+
+
+
                         //word doesn't already exists in topic -> needs to be made new instead of updated ->all topics
                         if (newTopics.contains(topicchild.child("name").getValue().toString()))
                             topicsUpdate = allTopics;
