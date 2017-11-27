@@ -29,9 +29,7 @@
         <activity
             android:name=".textRecActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".addWordDialog" />
         <activity android:name=".AddWordEditTopic" />
-        <activity android:name=".WordsInTopicActivity"></activity>
     </application>
 
 </manifest>

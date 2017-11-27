@@ -23,8 +23,10 @@ class TabsPagerAdapter extends FragmentPagerAdapter{
                 AllWordsFragment allWordsFragment = new AllWordsFragment();
                 return allWordsFragment;
             case 1:
-                TopicWordFragment topicWordFragment = new TopicWordFragment();
-                return topicWordFragment;
+//                TopicWordFragment topicWordFragment = new TopicWordFragment();
+//                return topicWordFragment;
+                RootFragment rootFragment = new RootFragment();
+                return rootFragment;
             default:
                 return null;
         }

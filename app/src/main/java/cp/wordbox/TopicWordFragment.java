@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +32,8 @@ import com.google.firebase.database.ValueEventListener;
 import cp.wordbox.recyclerView_models.Topic;
 
 public class TopicWordFragment extends Fragment {
+
+    private static final String TAG = "TopicFragment";
 
     private FirebaseAuth mAuth;
 
@@ -147,6 +151,16 @@ public class TopicWordFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Log.i("test", "click");;
+                        //open wordlist with only words in topics
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.root_frame, new SecondFragment());
+                    /*
+                     * IMPORTANT: The following lines allow us to add the fragment
+                     * to the stack and return to it later, by pressing back
+                     */
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        trans.addToBackStack(null);
+                        trans.commit();
                     }
                 });
 
