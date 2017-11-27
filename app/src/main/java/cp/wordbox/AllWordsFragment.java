@@ -154,8 +154,7 @@ public class AllWordsFragment extends Fragment {
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        wordsRef.child(id).removeValue();//id
-                                        //delete words, which are in topic - (only if only in this topic, else: only delete topic)
+                                        firebase_interactor.remove_word(id);
                                     }
                                 });
                         AlertDialog removeDialog = removeDialogBuilder.create();

@@ -120,8 +120,43 @@ public class Firebase_Interactor {
         }
     }
 
-    public void remove_word(HashMap word){
+    public void remove_word(final String wordId){
+        //remove word from wordlist
+        wordsRef.child(wordId).removeValue();
 
+        //remove word from wordlists in topics
+        topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> alltopics = dataSnapshot.getChildren().iterator();
+                while (alltopics.hasNext()) {
+                    DataSnapshot topicSel = alltopics.next();
+                    DatabaseReference wordsintopicsRef = topicSel.child("words").getRef();
+                    wordsintopicsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> wordsintopics = dataSnapshot.getChildren().iterator();
+                            while (wordsintopics.hasNext()) {
+                                DataSnapshot wordintopicSel = wordsintopics.next();
+                                if(wordintopicSel.getKey().toString().equals(wordId)){
+                                    wordintopicSel.getRef().removeValue();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void remove_topic(final String topicId, final String topicName, boolean removeAll){
@@ -178,9 +213,8 @@ public class Firebase_Interactor {
                                 Iterator<DataSnapshot> allWordsInTopic = dataSnapshot.getChildren().iterator();
                                 while (allWordsInTopic.hasNext()) {
                                     DataSnapshot wordSel = allWordsInTopic.next();
-                                    if (wordIds.contains(wordSel.getKey().toString())){
+                                    if (wordIds.contains(wordSel.getKey().toString()))
                                         wordSel.getRef().removeValue();
-                                    }
                                 }
                             }
 
