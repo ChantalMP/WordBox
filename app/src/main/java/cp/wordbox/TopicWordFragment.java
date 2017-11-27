@@ -38,6 +38,8 @@ public class TopicWordFragment extends Fragment {
 
     private View myMainView;
 
+    Firebase_Interactor firebase_interactor;
+
     public TopicWordFragment() {
         // Required empty public constructor
     }
@@ -53,6 +55,8 @@ public class TopicWordFragment extends Fragment {
 
         String current_user_id = mAuth.getCurrentUser().getUid();
         topicRef = FirebaseDatabase.getInstance().getReference().child("topics").child(current_user_id);
+
+        firebase_interactor = new Firebase_Interactor();
 
         topicList = (RecyclerView) myMainView.findViewById(R.id.topics_list);
         topicList.setHasFixedSize(true);
@@ -142,47 +146,7 @@ public class TopicWordFragment extends Fragment {
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.i("test", "click");
-//
-//                        FragmentPagerAdapter myAdapter = new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
-//                            @Override
-//                            public Fragment getItem(int position) {
-//                                return null;
-//                            }
-//
-//                            @Override
-//                            public int getCount() {
-//                                return 0;
-//                            }
-//                        };
-
-
-
-                        //new Intent -> Topic -> looks like "All" word list, but only with words in topic
-                        //i have saved word ids in topic
-                        //Intent to AllWordsFragment -> add word is similar, edit also
-                        //just RecyclerAdapter only shows words with those Ids
-//                        Intent showWordsIntent = new Intent(getContext(), AllWordsFragment.class);
-//                        final ArrayList<String> wordList = new ArrayList<String>();
-//                        DatabaseReference topicWordRef = topicRef.child("words");
-//                        topicWordRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-//                                while (children.hasNext()){
-//                                    DataSnapshot child = children.next();
-//                                    String topicWordId = child.getValue().toString();
-//                                    wordList.add(topicWordId);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                        showWordsIntent.putExtra("wordList", wordList);
-//                        startActivity(showWordsIntent);
+                        Log.i("test", "click");;
                     }
                 });
 
@@ -210,14 +174,14 @@ public class TopicWordFragment extends Fragment {
                                                 .setNegativeButton("Only remove topic", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-                                                        topicRef.child(id).removeValue();
+                                                        firebase_interactor.remove_topic(id, model.getName(), false);
                                                     }
                                                 })
                                                 .setPositiveButton("Remove all words", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-                                                        topicRef.child(id).removeValue();
                                                         //delete words, which are in topic - (only if only in this topic, else: only delete topic)
+                                                        firebase_interactor.remove_topic(id, model.getName(), true);
                                                     }
                                                 })
                                                 .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -242,6 +206,7 @@ public class TopicWordFragment extends Fragment {
         };
 
         topicList.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.notifyDataSetChanged();
     }
 
     public static class TopicViewHolder extends RecyclerView.ViewHolder{

@@ -53,8 +53,6 @@ public class Firebase_Interactor {
         //to topicRef
         final ArrayList<String> allTopics = (ArrayList<String>) word.get("topicsAll");
         final ArrayList<String> newTopics = (ArrayList<String>) word.get("topicsNew");
-        Log.i("test", "interact all " + allTopics.toString());
-        Log.i("test", "interact new " + newTopics.toString());
 
         for (final String topic: allTopics){
             topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -75,7 +73,7 @@ public class Firebase_Interactor {
                                 while (children.hasNext()) {
                                     DataSnapshot childSel = children.next();
                                     String topic = childSel.getValue().toString();
-                                    if(!allTopics.contains(topic)){//topic was removed
+                                    if(!allTopics.contains(topic)){//topic was unselected
                                         childSel.getRef().removeValue();
                                     }
                                 }
@@ -86,11 +84,6 @@ public class Firebase_Interactor {
 
                             }
                         });
-
-
-
-
-
 
                         //word doesn't already exists in topic -> needs to be made new instead of updated ->all topics
                         if (newTopics.contains(topicchild.child("name").getValue().toString()))
@@ -128,6 +121,146 @@ public class Firebase_Interactor {
     }
 
     public void remove_word(HashMap word){
+
+    }
+
+    public void remove_topic(final String topicId, final String topicName, boolean removeAll){
+
+        //which words are in topic
+        final ArrayList<String> wordIds = new ArrayList<String>();
+        final DatabaseReference wordInTopicRef = topicRef.child(topicId).child("words");
+        wordInTopicRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+                while (children.hasNext()) {
+                    DataSnapshot childSel = children.next();
+                    wordIds.add(childSel.getKey().toString());
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+        Log.i("test", wordIds.toString());
+
+        if(removeAll){//remove included words
+
+            //remove them from wordList
+            wordsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterator<DataSnapshot> allWords = dataSnapshot.getChildren().iterator();
+                    while (allWords.hasNext()) {
+                        DataSnapshot wordSel = allWords.next();
+                        if(wordIds.contains(wordSel.getKey().toString())){
+                            wordSel.getRef().removeValue();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            //remove them in all topics
+
+        }
+
+        //remove deleted topic from topiclist
+        topicRef.child(topicId).removeValue();
+
+        //remove topicRef from all topiclists in words
+        wordsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> allWords = dataSnapshot.getChildren().iterator();
+                while (allWords.hasNext()) {
+                    DataSnapshot wordSel = allWords.next();
+                    if(wordIds.contains(wordSel.getKey().toString())){
+                        wordSel.child("topics").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Iterator<DataSnapshot> allTopicsInWord = dataSnapshot.getChildren().iterator();
+                                while (allTopicsInWord.hasNext()) {
+                                    DataSnapshot topicSel = allTopicsInWord.next();
+                                    String name = topicSel.getValue().toString();
+                                    if(name.equals(topicName)){
+                                        topicSel.getRef().removeValue();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //remove topicRef from all words in other topics
+        topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> allTopics = dataSnapshot.getChildren().iterator();
+                while (allTopics.hasNext()) {
+                    DataSnapshot topicSel = allTopics.next();
+                    //all words in topicSel
+                    DatabaseReference wordsInTopicRef = topicSel.child("words").getRef();
+                    wordsInTopicRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> allWordsInTopic = dataSnapshot.getChildren().iterator();
+                            while (allWordsInTopic.hasNext()) {
+                                DataSnapshot wordInTopicSel = allWordsInTopic.next();
+                                if(wordIds.contains(wordInTopicSel.getKey().toString())){
+                                    wordInTopicSel.child("topics").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Iterator<DataSnapshot> allTopicsInWord = dataSnapshot.getChildren().iterator();
+                                            while (allTopicsInWord.hasNext()) {
+                                                DataSnapshot topicSel = allTopicsInWord.next();
+                                                String name = topicSel.getValue().toString();
+                                                if(name.equals(topicName)){
+                                                    topicSel.getRef().removeValue();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 }

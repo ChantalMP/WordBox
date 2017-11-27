@@ -21,21 +21,10 @@
         android:weightSum="1">
 
         <Button
-            android:id="@+id/addTopicBtn"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="0.5"
-            android:background="@color/colorPrimaryDark"
-            android:text="Add new topic"
-            android:textColor="@android:color/background_light" />
-
-        <Button
             android:id="@+id/add_word_edit_topic_save_btn"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:layout_weight="0.5"
             android:background="@color/colorPrimaryDark"
             android:text="Save"
             android:textColor="@android:color/background_light" />

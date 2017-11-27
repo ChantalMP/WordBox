@@ -59,16 +59,7 @@ public class AddWordEditTopic extends AppCompatActivity {
         topicList.setHasFixedSize(true);
         topicList.setLayoutManager(new LinearLayoutManager(AddWordEditTopic.this));
 
-        Button addTopicBtn = (Button) findViewById(R.id.addTopicBtn);
         Button saveButton = (Button) findViewById(R.id.add_word_edit_topic_save_btn);
-
-        addTopicBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //addTopicDialog("Add new Topic");
-                Log.i("test", "noch ist es nicht möglich hier Themen hinzuzufügen");
-            }
-        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
