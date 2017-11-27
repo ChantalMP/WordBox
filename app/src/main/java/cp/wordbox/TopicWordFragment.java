@@ -150,10 +150,14 @@ public class TopicWordFragment extends Fragment {
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.i("test", "click");;
                         //open wordlist with only words in topics
                         FragmentTransaction trans = getFragmentManager().beginTransaction();
-                        trans.replace(R.id.root_frame, new SecondFragment());
+
+                        Fragment wordFragment = new AllWordsFragment();
+                        Bundle bundle= new Bundle();
+                        bundle.putString("topic", id);
+                        wordFragment.setArguments(bundle);
+                        trans.replace(R.id.root_frame, wordFragment);
                     /*
                      * IMPORTANT: The following lines allow us to add the fragment
                      * to the stack and return to it later, by pressing back

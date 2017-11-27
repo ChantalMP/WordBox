@@ -38,10 +38,13 @@ import cp.wordbox.recyclerView_models.Word;
 
 public class AllWordsFragment extends Fragment {
 
+    private static final String TAG = "AllWordsFragment";
+
     private FirebaseAuth mAuth;
 
     private RecyclerView wordsList;
     private DatabaseReference wordsRef;
+    private DatabaseReference topicRef;
 
     private String wordId = "";
     DatabaseReference word_key;
@@ -55,6 +58,8 @@ public class AllWordsFragment extends Fragment {
     String field2Other = "";
     String field3Other = "";
 
+    String topicId = "";
+
     private ArrayList<String> topicsSelectedOld;
     private ArrayList<String> topicsSelectedNew;
 
@@ -64,6 +69,15 @@ public class AllWordsFragment extends Fragment {
 
     public AllWordsFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if(bundle != null){
+            topicId = bundle.getString("topic");
+        }
     }
 
     @Override
@@ -93,6 +107,7 @@ public class AllWordsFragment extends Fragment {
 
         String current_user_id = mAuth.getCurrentUser().getUid();
         wordsRef = FirebaseDatabase.getInstance().getReference().child("words").child(current_user_id);
+        topicRef = FirebaseDatabase.getInstance().getReference().child("topics").child(current_user_id);
 
         wordsList = (RecyclerView) myMainView.findViewById(R.id.allWords_list);
         wordsList.setHasFixedSize(true);
@@ -105,11 +120,16 @@ public class AllWordsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+
+
         //get Data from Firebase with Firebase Recycler Apdapter
 
         //to order values after word in your language - not sorted if you just pass the reference to your adapter
         Query query = wordsRef.orderByChild("sortVersion");
-
+        if(!topicId.equals("")){
+            //called from topic activity -> query with only words in topic
+            query = topicRef.child(topicId).child("words").orderByChild("sortVersion");
+        }
         //filter by word idee -> other query -> others get populated -> rest of functionality remains the same
 
         //model class, ViewHolder Class
