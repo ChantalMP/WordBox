@@ -145,7 +145,7 @@ public class Firebase_Interactor {
 
         if(removeAll){//remove included words
 
-            //remove them from wordList
+            //remove included words from wordList
             wordsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -164,7 +164,39 @@ public class Firebase_Interactor {
                 }
             });
 
-            //remove them in all topics
+            //remove included words in all (other) topics
+            topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterator<DataSnapshot> allTopics = dataSnapshot.getChildren().iterator();
+                    while (allTopics.hasNext()) {
+                        DataSnapshot topicSel = allTopics.next();
+                        DatabaseReference wordsInTopic = topicSel.child("words").getRef();
+                        wordsInTopic.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Iterator<DataSnapshot> allWordsInTopic = dataSnapshot.getChildren().iterator();
+                                while (allWordsInTopic.hasNext()) {
+                                    DataSnapshot wordSel = allWordsInTopic.next();
+                                    if (wordIds.contains(wordSel.getKey().toString())){
+                                        wordSel.getRef().removeValue();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
         }
 
