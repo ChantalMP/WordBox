@@ -156,6 +156,7 @@ public class TopicWordFragment extends Fragment {
                         Fragment wordFragment = new AllWordsFragment();
                         Bundle bundle= new Bundle();
                         bundle.putString("topic", id);
+                        bundle.putString("topicName", model.getName());
                         wordFragment.setArguments(bundle);
                         trans.replace(R.id.root_frame, wordFragment);
                     /*

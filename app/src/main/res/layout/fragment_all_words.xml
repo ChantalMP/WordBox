@@ -6,6 +6,19 @@
     android:weightSum="1"
     tools:context="cp.wordbox.AllWordsFragment">
 
+    <TextView
+        android:id="@+id/topic_name_all_words"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="3dp"
+        android:paddingTop="5dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/allWords_list"
         android:layout_width="match_parent"

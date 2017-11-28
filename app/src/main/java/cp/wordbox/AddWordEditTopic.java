@@ -33,6 +33,7 @@ public class AddWordEditTopic extends AppCompatActivity {
     private DatabaseReference wordsRef;
 
     private String wordId;
+    private String topicId = "";
     private ArrayList<String> topicIdsTopics;
 
     private ArrayList<String> selected;
@@ -80,6 +81,7 @@ public class AddWordEditTopic extends AppCompatActivity {
         super.onStart();
         //get word Id from extras
         wordId = getIntent().getExtras().getString("wordId");
+
         topicsChecked();
 
         //get Data from Firebase with Firebase Recycler Apdapter

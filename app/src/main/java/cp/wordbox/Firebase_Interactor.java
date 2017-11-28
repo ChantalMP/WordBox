@@ -32,7 +32,8 @@ public class Firebase_Interactor {
     }
 
     public void add_word(final HashMap word){
-        //to wordRef
+
+        //all infos to wordRef
         final String wordId = word.get("id").toString();
         wordsRef.child(wordId).child("learn").setValue("1");
         wordsRef.child(wordId).child("degree").setValue("0");
@@ -44,13 +45,14 @@ public class Firebase_Interactor {
         wordsRef.child(wordId).child("otherLang2").setValue(word.get("otherLang2"));
         wordsRef.child(wordId).child("otherLang3").setValue(word.get("otherLang3"));
 
+        //topic info to word ref
         for(String topic: (ArrayList<String>) word.get("topicsNew")){
             DatabaseReference topicKey = wordsRef.child(wordId).child("topics").push();
             String topicId = topicKey.getKey();
             wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
         }
 
-        //to topicRef
+        //all info to topicRef
         final ArrayList<String> allTopics = (ArrayList<String>) word.get("topicsAll");
         final ArrayList<String> newTopics = (ArrayList<String>) word.get("topicsNew");
 
@@ -59,12 +61,12 @@ public class Firebase_Interactor {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //all topics in Database
-                    Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-                    while (children.hasNext()){
+                    Iterator<DataSnapshot> topicChildren = dataSnapshot.getChildren().iterator();
+                    while (topicChildren.hasNext()){
                         //topic in topiclist of word
-                        DataSnapshot topicchild = children.next();
+                        DataSnapshot topicchild = topicChildren.next();
 
-                        //remove topic in topiclist in word in topic
+                        //remove topic in topiclist in word in topic when unselected
                         DatabaseReference remRev = topicchild.child("words").child(wordId).child("topics").getRef();
                         remRev.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -101,8 +103,10 @@ public class Firebase_Interactor {
                             topicchild.child("words").child(wordId).child("yourLang3").getRef().setValue(word.get("yourLang3"));
                             topicchild.child("words").child(wordId).child("otherLang2").getRef().setValue(word.get("otherLang2"));
                             topicchild.child("words").child(wordId).child("otherLang3").getRef().setValue(word.get("otherLang3"));
+                        }
 
-                            for(String topic: topicsUpdate){
+                        if(topicchild.child("name").getValue().toString().equals(topic)) {//because should only update once
+                            for (String topic : topicsUpdate) {
                                 DatabaseReference topicKey = topicchild.child("words").child(wordId).child("topics").getRef().push();
                                 String topicId = topicKey.getKey();
                                 topicchild.child("words").child(wordId).child("topics").child(topicId).getRef().setValue(topic);

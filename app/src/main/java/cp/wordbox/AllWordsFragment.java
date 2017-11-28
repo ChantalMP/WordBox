@@ -59,8 +59,9 @@ public class AllWordsFragment extends Fragment {
     String field3Other = "";
 
     String topicId = "";
+    String topicName;
 
-    private ArrayList<String> topicsSelectedOld;
+    private ArrayList<String> topicsSelectedAll;
     private ArrayList<String> topicsSelectedNew;
 
 
@@ -77,6 +78,7 @@ public class AllWordsFragment extends Fragment {
         Bundle bundle = getArguments();
         if(bundle != null){
             topicId = bundle.getString("topic");
+            topicName = bundle.getString("topicName");
         }
     }
 
@@ -86,7 +88,7 @@ public class AllWordsFragment extends Fragment {
         // Inflate the layout for this fragment
         myMainView =  inflater.inflate(R.layout.fragment_all_words, container, false);
 
-        topicsSelectedOld = new ArrayList<String>();
+        topicsSelectedAll = new ArrayList<String>();
         topicsSelectedNew = new ArrayList<String>();
 
         firebase_interactor = new Firebase_Interactor();
@@ -127,6 +129,11 @@ public class AllWordsFragment extends Fragment {
         //to order values after word in your language - not sorted if you just pass the reference to your adapter
         Query query = wordsRef.orderByChild("sortVersion");
         if(!topicId.equals("")){
+            //show topicName
+            TextView topicname = (TextView) myMainView.findViewById(R.id.topic_name_all_words);
+            topicname.setText(topicName);
+            topicname.setVisibility(View.VISIBLE);
+
             //called from topic activity -> query with only words in topic
             query = topicRef.child(topicId).child("words").orderByChild("sortVersion");
         }
@@ -195,7 +202,7 @@ public class AllWordsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == 1) {
             if (data.hasExtra("allTopics")) {
-                topicsSelectedOld = data.getStringArrayListExtra("allTopics");
+                topicsSelectedAll = data.getStringArrayListExtra("allTopics");
             }
             if (data.hasExtra("newTopics")) {
                 topicsSelectedNew = data.getStringArrayListExtra("newTopics");
@@ -273,7 +280,7 @@ public class AllWordsFragment extends Fragment {
             }
         }
 
-        ImageButton editTopics = (ImageButton) addDialog.findViewById(R.id.word_edit_topics_button);
+        final ImageButton editTopics = (ImageButton) addDialog.findViewById(R.id.word_edit_topics_button);
         editTopics.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -281,8 +288,8 @@ public class AllWordsFragment extends Fragment {
                 wordId = id;
                 Intent editTopicsIntent = new Intent(getContext(), AddWordEditTopic.class);
                 editTopicsIntent.putExtra("wordId", wordId);
+                editTopicsIntent.putExtra("topic", topicId);
                 startActivityForResult(editTopicsIntent, 1);//1 ist requestCode
-
                 //showTopicDialog();
             }
         });
@@ -317,6 +324,11 @@ public class AllWordsFragment extends Fragment {
                             wordId = id;
                         }
 
+                        if(!topicName.equals("") && !topicsSelectedAll.contains(topicName)){//we come from topicactivity
+                                topicsSelectedAll.add(topicName);
+                                topicsSelectedNew.add(topicName);
+                        }
+
                         HashMap wordInfos = new HashMap();
                         wordInfos.put("id", wordId);
                         wordInfos.put("learn", "1");
@@ -328,12 +340,11 @@ public class AllWordsFragment extends Fragment {
                         wordInfos.put("yourLang3", field3Your);
                         wordInfos.put("otherLang2", field2Other);
                         wordInfos.put("otherLang3", field3Other);
-                        wordInfos.put("topicsAll", topicsSelectedOld);
+                        wordInfos.put("topicsAll", topicsSelectedAll);
                         wordInfos.put("topicsNew", topicsSelectedNew);
                         //make empty for next word
-                        topicsSelectedOld = new ArrayList<String>();
+                        topicsSelectedAll = new ArrayList<String>();
                         topicsSelectedNew = new ArrayList<String>();
-
                         firebase_interactor.add_word(wordInfos);
                     }
 
