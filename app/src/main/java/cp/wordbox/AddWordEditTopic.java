@@ -114,7 +114,8 @@ public class AddWordEditTopic extends AppCompatActivity {
                     public void onClick(View v) {
                         if(!topicCheck.isChecked()){
                             topicCheck.setChecked(true);
-                            selected.add(topicCheck.getText().toString());
+                            if(!selected.contains(topicCheck.getText().toString()))
+                                selected.add(topicCheck.getText().toString());
                         }
                         else{
                             topicCheck.setChecked(false);
@@ -198,7 +199,6 @@ public class AddWordEditTopic extends AppCompatActivity {
         selectedOld.clear();
         selected.clear();
 
-        //TODO: Prüfen ob topic überhaupt noch existiert
         DatabaseReference WordTopicsRef = wordsRef.child(wordId).child("topics").getRef();
         WordTopicsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import cp.wordbox.recyclerView_models.Word;
 
@@ -59,13 +60,15 @@ public class AllWordsFragment extends Fragment {
     String field3Other = "";
 
     String topicId = "";
-    String topicName;
+    String topicName = "";
 
     private ArrayList<String> topicsSelectedAll;
     private ArrayList<String> topicsSelectedNew;
 
 
     Firebase_Interactor firebase_interactor;
+
+    boolean topicsChanged = false;
 
 
     public AllWordsFragment() {
@@ -101,7 +104,7 @@ public class AllWordsFragment extends Fragment {
                 word_key = wordsRef.push();
                 //get key
                 wordId = word_key.getKey();
-                showWordDialog(false, null, wordId); //edit, model (not edit -> no  model), id on witch word will be createda
+                showWordDialog(false, null, wordId); //edit, model (not edit -> no  model), id on witch word will be created
             }
         });
 
@@ -122,10 +125,7 @@ public class AllWordsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-
-
         //get Data from Firebase with Firebase Recycler Apdapter
-
         //to order values after word in your language - not sorted if you just pass the reference to your adapter
         Query query = wordsRef.orderByChild("sortVersion");
         if(!topicId.equals("")){
@@ -137,7 +137,6 @@ public class AllWordsFragment extends Fragment {
             //called from topic activity -> query with only words in topic
             query = topicRef.child(topicId).child("words").orderByChild("sortVersion");
         }
-        //filter by word idee -> other query -> others get populated -> rest of functionality remains the same
 
         //model class, ViewHolder Class
         FirebaseRecyclerAdapter<Word, TopicViewHolder> firebaseRecyclerAdapter
@@ -149,6 +148,7 @@ public class AllWordsFragment extends Fragment {
         ) {
             @Override
             protected void populateViewHolder(TopicViewHolder viewHolder, final Word model, final int position) {
+
                 //firebase id of clicked field
                 final String id = getRef(position).getKey();
                 //used to set values for Recycler View -> displaying data
@@ -201,6 +201,7 @@ public class AllWordsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+            topicsChanged = true;
             if (data.hasExtra("allTopics")) {
                 topicsSelectedAll = data.getStringArrayListExtra("allTopics");
             }
@@ -243,6 +244,7 @@ public class AllWordsFragment extends Fragment {
     }
 
     private void showWordDialog(final boolean edit, Word model, final String id){
+
         final Dialog addDialog = new Dialog(getContext());
         addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         addDialog.setContentView(R.layout.add_word_dialog);
@@ -290,12 +292,40 @@ public class AllWordsFragment extends Fragment {
                 editTopicsIntent.putExtra("wordId", wordId);
                 editTopicsIntent.putExtra("topic", topicId);
                 startActivityForResult(editTopicsIntent, 1);//1 ist requestCode
-                //showTopicDialog();
             }
         });
 
+        //update topiclists/ generate topic list if not edited
+        if (!topicsChanged){
+            wordId = id;
+            DatabaseReference WordTopicsRef = wordsRef.child(wordId).child("topics").getRef();
+            WordTopicsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+                        while (children.hasNext()){
+                            String topic = children.next().getValue().toString();
+                            if(!topicsSelectedAll.contains(topic))
+                                topicsSelectedAll.add(topic);
+                        }
+                    }
 
-        Button addWord = (Button) addDialog.findViewById(R.id.add_word_dialog_btn);
+                    if(!topicName.equals("") && !topicsSelectedAll.contains(topicName)){//we come from topicactivity and its no editing
+                        topicsSelectedAll.add(topicName);
+                        topicsSelectedNew.add(topicName);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+
+
+
+        Button addWord = (Button) addDialog.findViewById(R.id.add_word_dialog_btn);//or edit
         if(edit)
             addWord.setText("save");
 
@@ -315,44 +345,32 @@ public class AllWordsFragment extends Fragment {
                 field2Other = otherLang2.getText().toString();
                 field3Other = otherLang3.getText().toString();
 
+
+                if(edit){
+                    wordId = id;
+                }
+
+                HashMap wordInfos = new HashMap();
+                wordInfos.put("id", wordId);
+                wordInfos.put("learn", "1");
+                wordInfos.put("degree", "0");
+                wordInfos.put("otherLang", dialogInputOtherLang);
+                wordInfos.put("yourLang", dialogInputYourLang);
+                wordInfos.put("sortVersion", dialogInputYourLang.toLowerCase());
+                wordInfos.put("yourLang2", field2Your);
+                wordInfos.put("yourLang3", field3Your);
+                wordInfos.put("otherLang2", field2Other);
+                wordInfos.put("otherLang3", field3Other);
+                wordInfos.put("topicsAll", topicsSelectedAll);
+                wordInfos.put("topicsNew", topicsSelectedNew);
+                //make empty for next word
+                firebase_interactor.add_word(wordInfos);
+
+                topicsSelectedAll = new ArrayList<String>();
+                topicsSelectedNew = new ArrayList<String>();
+                topicsChanged = false;
+
                 addDialog.cancel();
-
-                wordsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(edit){
-                            wordId = id;
-                        }
-
-                        if(!topicName.equals("") && !topicsSelectedAll.contains(topicName)){//we come from topicactivity
-                                topicsSelectedAll.add(topicName);
-                                topicsSelectedNew.add(topicName);
-                        }
-
-                        HashMap wordInfos = new HashMap();
-                        wordInfos.put("id", wordId);
-                        wordInfos.put("learn", "1");
-                        wordInfos.put("degree", "0");
-                        wordInfos.put("otherLang", dialogInputOtherLang);
-                        wordInfos.put("yourLang", dialogInputYourLang);
-                        wordInfos.put("sortVersion", dialogInputYourLang.toLowerCase());
-                        wordInfos.put("yourLang2", field2Your);
-                        wordInfos.put("yourLang3", field3Your);
-                        wordInfos.put("otherLang2", field2Other);
-                        wordInfos.put("otherLang3", field3Other);
-                        wordInfos.put("topicsAll", topicsSelectedAll);
-                        wordInfos.put("topicsNew", topicsSelectedNew);
-                        //make empty for next word
-                        topicsSelectedAll = new ArrayList<String>();
-                        topicsSelectedNew = new ArrayList<String>();
-                        firebase_interactor.add_word(wordInfos);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
             }
         });
 

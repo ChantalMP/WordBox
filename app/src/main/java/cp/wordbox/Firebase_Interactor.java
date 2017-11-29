@@ -33,7 +33,7 @@ public class Firebase_Interactor {
 
     public void add_word(final HashMap word){
 
-        //all infos to wordRef
+        //all infos to wordRef (in allWords)
         final String wordId = word.get("id").toString();
         wordsRef.child(wordId).child("learn").setValue("1");
         wordsRef.child(wordId).child("degree").setValue("0");
@@ -52,17 +52,49 @@ public class Firebase_Interactor {
             wordsRef.child(wordId).child("topics").child(topicId).setValue(topic);
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         //all info to topicRef
         final ArrayList<String> allTopics = (ArrayList<String>) word.get("topicsAll");
         final ArrayList<String> newTopics = (ArrayList<String>) word.get("topicsNew");
+        Log.i("test", "INTER start: all: " + allTopics.toString() + ", new: " + newTopics.toString() + "\n");
 
-        for (final String topic: allTopics){
+        //change info in all topics where word is
+        topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> topicChildrenAll = dataSnapshot.getChildren().iterator();
+                while (topicChildrenAll.hasNext()) {
+                    DataSnapshot topicchild = topicChildrenAll.next();
+                    if(allTopics.contains(topicchild.child("name").getValue().toString())){ //if word is in topic (or should be in topic)
+                        //update normal word info
+                        topicchild.child("words").child(wordId).child("learn").getRef().setValue("1");
+                        topicchild.child("words").child(wordId).child("degree").getRef().setValue("0");
+                        topicchild.child("words").child(wordId).child("otherLang").getRef().setValue(word.get("otherLang"));
+                        topicchild.child("words").child(wordId).child("yourLang").getRef().setValue(word.get("yourLang"));
+                        topicchild.child("words").child(wordId).child("sortVersion").getRef().setValue(word.get("sortVersion"));
+                        topicchild.child("words").child(wordId).child("yourLang2").getRef().setValue(word.get("yourLang2"));
+                        topicchild.child("words").child(wordId).child("yourLang3").getRef().setValue(word.get("yourLang3"));
+                        topicchild.child("words").child(wordId).child("otherLang2").getRef().setValue(word.get("otherLang2"));
+                        topicchild.child("words").child(wordId).child("otherLang3").getRef().setValue(word.get("otherLang3"));
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        for (final String topic : allTopics) {
             topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //all topics in Database
                     Iterator<DataSnapshot> topicChildren = dataSnapshot.getChildren().iterator();
-                    while (topicChildren.hasNext()){
+                    while (topicChildren.hasNext()) {
                         //topic in topiclist of word
                         DataSnapshot topicchild = topicChildren.next();
 
@@ -75,7 +107,7 @@ public class Firebase_Interactor {
                                 while (children.hasNext()) {
                                     DataSnapshot childSel = children.next();
                                     String topic = childSel.getValue().toString();
-                                    if(!allTopics.contains(topic)){//topic was unselected
+                                    if (!allTopics.contains(topic)) {//topic was unselected
                                         childSel.getRef().removeValue();
                                     }
                                 }
@@ -93,19 +125,9 @@ public class Firebase_Interactor {
                         else
                             topicsUpdate = newTopics;
 
-                        if(topicchild.child("name").getValue().toString().equals(topic)){
-                            topicchild.child("words").child(wordId).child("learn").getRef().setValue("1");
-                            topicchild.child("words").child(wordId).child("degree").getRef().setValue("0");
-                            topicchild.child("words").child(wordId).child("otherLang").getRef().setValue(word.get("otherLang"));
-                            topicchild.child("words").child(wordId).child("yourLang").getRef().setValue(word.get("yourLang"));
-                            topicchild.child("words").child(wordId).child("sortVersion").getRef().setValue(word.get("sortVersion"));
-                            topicchild.child("words").child(wordId).child("yourLang2").getRef().setValue(word.get("yourLang2"));
-                            topicchild.child("words").child(wordId).child("yourLang3").getRef().setValue(word.get("yourLang3"));
-                            topicchild.child("words").child(wordId).child("otherLang2").getRef().setValue(word.get("otherLang2"));
-                            topicchild.child("words").child(wordId).child("otherLang3").getRef().setValue(word.get("otherLang3"));
-                        }
+                        //update word info in topic
+                        if (topicchild.child("name").getValue().toString().equals(topic)) {
 
-                        if(topicchild.child("name").getValue().toString().equals(topic)) {//because should only update once
                             for (String topic : topicsUpdate) {
                                 DatabaseReference topicKey = topicchild.child("words").child(wordId).child("topics").getRef().push();
                                 String topicId = topicKey.getKey();
@@ -113,7 +135,6 @@ public class Firebase_Interactor {
                             }
                         }
                     }
-
                 }
 
                 @Override
@@ -180,7 +201,6 @@ public class Firebase_Interactor {
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-        Log.i("test", wordIds.toString());
 
         if(removeAll){//remove included words
 
