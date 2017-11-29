@@ -88,7 +88,7 @@ public class Firebase_Interactor {
             }
         });
 
-        for (final String topic : allTopics) {
+        //for (final String topic : allTopics) {
             topicRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -126,7 +126,7 @@ public class Firebase_Interactor {
                             topicsUpdate = newTopics;
 
                         //update word info in topic
-                        if (topicchild.child("name").getValue().toString().equals(topic)) {
+                        if (allTopics.contains(topicchild.child("name").getValue().toString())){
 
                             for (String topic : topicsUpdate) {
                                 DatabaseReference topicKey = topicchild.child("words").child(wordId).child("topics").getRef().push();
@@ -142,7 +142,7 @@ public class Firebase_Interactor {
 
                 }
             });
-        }
+        //}
     }
 
     public void remove_word(final String wordId){
