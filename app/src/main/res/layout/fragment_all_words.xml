@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
-    tools:context="cp.wordbox.AllWordsFragment">
+    tools:context="cp.wordbox.dictionary.AllWordsFragment">
 
     <TextView
         android:id="@+id/topic_name_all_words"

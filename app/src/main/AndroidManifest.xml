@@ -18,18 +18,18 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity
-            android:name=".dictActivity"
+            android:name=".dictionary.dictActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".grammarActivity"
+            android:name=".grammar.grammarActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".learnActivity"
+            android:name=".learning.learnActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".textRecActivity"
+            android:name=".textRecognition.textRecActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".AddWordEditTopic" />
+        <activity android:name=".dictionary.AddWordEditTopic" />
     </application>
 
 </manifest>

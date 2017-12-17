@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
-    tools:context="cp.wordbox.AddWordEditTopic">
+    tools:context="cp.wordbox.dictionary.AddWordEditTopic">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/topics_list"

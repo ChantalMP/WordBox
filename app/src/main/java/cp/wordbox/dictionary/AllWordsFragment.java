@@ -1,4 +1,4 @@
-package cp.wordbox;
+package cp.wordbox.dictionary;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import cp.wordbox.Firebase_Interactor;
+import cp.wordbox.R;
 import cp.wordbox.recyclerView_models.Word;
 
 

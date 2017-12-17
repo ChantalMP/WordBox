@@ -10,6 +10,11 @@ import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import cp.wordbox.dictionary.dictActivity;
+import cp.wordbox.grammar.grammarActivity;
+import cp.wordbox.learning.learnActivity;
+import cp.wordbox.textRecognition.textRecActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth;

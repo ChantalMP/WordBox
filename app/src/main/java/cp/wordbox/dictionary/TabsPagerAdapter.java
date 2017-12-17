@@ -1,9 +1,8 @@
-package cp.wordbox;
+package cp.wordbox.dictionary;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
 
 /**
  * Created by Chantal on 20.10.2017.

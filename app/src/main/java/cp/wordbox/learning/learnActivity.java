@@ -1,10 +1,12 @@
-package cp.wordbox;
+package cp.wordbox.learning;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
-public class grammarActivity extends AppCompatActivity {
+import cp.wordbox.R;
+
+public class learnActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
 
@@ -12,11 +14,11 @@ public class grammarActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_grammar);
+        setContentView(R.layout.activity_learn);
 
-        mToolbar = (Toolbar) findViewById(R.id.grammar_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.learn_toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Grammar");
+        getSupportActionBar().setTitle("Learn your words");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//includes back button
     }
 }
