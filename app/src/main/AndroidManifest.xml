@@ -30,6 +30,7 @@
             android:name=".textRecognition.textRecActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".dictionary.AddWordEditTopic" />
+        <activity android:name=".learning.aksWordsYesNo"></activity>
     </application>
 
 </manifest>
